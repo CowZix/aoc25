@@ -9,33 +9,44 @@ def main():
         lines = file.readlines()
     
     for line in lines:
-        old_num = cur_num
         line = line.strip()
+
         if line[0] == 'R':
-            cur_num += int(line[1:])
+            move = int(line[1:])
         elif line[0] == 'L':
-            cur_num -= int(line[1:])
-        cur_num, cross = fix(cur_num)
-        zero_cross += cross
-        print(line,":",old_num, "->", cur_num)
+            move = -int(line[1:])
+        else:
+            move = 0
+
+        zero_cross += cross_count(cur_num, move)
+        cur_num = wrap(cur_num, move)
+
         if cur_num == 0:
             zeros += 1
-            zero_cross += 1
-        print("cross", cross)
+
     print(zeros, zero_cross)
 
-def fix(input: int):
-    zeros = abs(input) // 100
-    output = input % 100
-    if input > 99:
-        output = input - 100
-    elif (input < 0):
-        zeros += 1
+def wrap(current: int, move: int)-> int:
+    input = (current + move) % 100
+    if (input < 0):
         output = input + 100
     else:
         output = input
     
-    return output, zeros
+    return output
+
+def cross_count(current: int, move: int)-> int:
+    count = 0
+    for i in range(abs(move)):
+        if move > 0:
+            current += 1
+        else:
+            current -= 1
+        current = wrap(current, 0)
+
+        if current == 0:
+            count += 1
+    return count
 
 
 if __name__ == "__main__":
